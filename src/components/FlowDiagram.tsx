@@ -1,4 +1,5 @@
 import { Database, FileText, Layers, Mail, Settings, Zap, type LucideIcon } from 'lucide-react'
+import { useState } from 'react'
 
 // ── Layout constants (600 × 240 viewBox) ───────────────────────────────────
 const W = 600
@@ -11,7 +12,6 @@ const TGT  = { x: 380, w: 216, h: 50 }
 
 const pct = (v: number, of: number) => `${(v / of) * 100}%`
 
-// ── PDF icon (SVG text element is fine inside a function component) ─────────
 function PdfIcon() {
   return (
     <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth={1.75} aria-hidden="true">
@@ -22,7 +22,6 @@ function PdfIcon() {
   )
 }
 
-// ── Data defined with component refs, not pre-rendered JSX ─────────────────
 const sources: { label: string; Icon: LucideIcon | (() => JSX.Element) }[] = [
   { label: 'Documents', Icon: FileText },
   { label: 'Email',     Icon: Mail     },
@@ -35,21 +34,27 @@ const outcomes: { label: string; Icon: LucideIcon }[] = [
   { label: 'Use Your Business Data', Icon: Database },
 ]
 
-const card = 'absolute flex items-center rounded-xl border border-zinc-100 bg-white shadow-[0_4px_16px_rgba(0,0,0,0.07)]'
-
-// ── Component ───────────────────────────────────────────────────────────────
 export function FlowDiagram() {
+  const [hovered, setHovered] = useState<number | null>(null)
+
   const inEdge = (y: number) => {
     const x0 = SRC.x + SRC.w + 2
     const x1 = HUB.x
     return `M${x0} ${y} C ${x0 + 40} ${y}, ${x1 - 40} ${HUB_MID}, ${x1} ${HUB_MID}`
   }
-
   const outEdge = (y: number) => {
     const x0 = HUB.x + HUB.size
     const x1 = TGT.x - 4
     return `M${x0} ${HUB_MID} C ${x0 + 30} ${HUB_MID}, ${x1 - 30} ${y}, ${x1} ${y}`
   }
+
+  // Card highlight style when that row is hovered
+  const cardStyle = (i: number) =>
+    `absolute flex items-center rounded-xl border bg-white transition-all duration-200 ${
+      hovered === i
+        ? 'border-brand-500 shadow-[0_0_0_1.5px_#ea5a0c,0_6px_20px_rgba(234,90,12,0.18)]'
+        : 'border-zinc-100 shadow-[0_4px_16px_rgba(0,0,0,0.07)]'
+    }`
 
   return (
     <div
@@ -63,8 +68,8 @@ export function FlowDiagram() {
           <path
             key={`in-${y}`}
             d={inEdge(y)}
-            className="stroke-brand-500 animate-dash"
-            strokeWidth={1.4}
+            strokeWidth={hovered === i ? 2 : 1.4}
+            className={`animate-dash transition-all duration-200 ${hovered === i ? 'stroke-brand-600' : 'stroke-brand-500/60'}`}
             style={{ animationDelay: `${i * 0.4}s` }}
           />
         ))}
@@ -72,59 +77,61 @@ export function FlowDiagram() {
           <g key={`out-${y}`}>
             <path
               d={outEdge(y)}
-              className="stroke-zinc-400 animate-dash"
-              strokeWidth={1.4}
+              strokeWidth={hovered === i ? 2 : 1.4}
+              className={`animate-dash transition-all duration-200 ${hovered === i ? 'stroke-brand-600' : 'stroke-zinc-300'}`}
               style={{ animationDelay: `${i * 0.4 + 0.2}s` }}
             />
-            <circle cx={TGT.x - 4} cy={y} r={2.5} className="fill-zinc-400" />
+            <circle
+              cx={TGT.x - 4} cy={y} r={hovered === i ? 3.5 : 2.5}
+              className={`transition-all duration-200 ${hovered === i ? 'fill-brand-600' : 'fill-zinc-400'}`}
+            />
           </g>
         ))}
       </svg>
 
-      {/* Source cards (left) */}
+      {/* Source cards */}
       {sources.map(({ label, Icon }, i) => (
         <div
           key={label}
           title={label}
-          className={`${card} justify-center`}
-          style={{
-            left:   pct(SRC.x, W),
-            top:    pct(ROWS[i] - SRC.h / 2, H),
-            width:  pct(SRC.w, W),
-            height: pct(SRC.h, H),
-          }}
+          onMouseEnter={() => setHovered(i)}
+          onMouseLeave={() => setHovered(null)}
+          className={`${cardStyle(i)} cursor-pointer justify-center`}
+          style={{ left: pct(SRC.x, W), top: pct(ROWS[i] - SRC.h / 2, H), width: pct(SRC.w, W), height: pct(SRC.h, H) }}
         >
-          <Icon className="size-6" strokeWidth={1.75} aria-hidden="true" />
+          <Icon
+            className={`size-6 transition-colors duration-200 ${hovered === i ? 'text-brand-600' : 'text-zinc-500'}`}
+            strokeWidth={1.75}
+            aria-hidden="true"
+          />
         </div>
       ))}
 
-      {/* Central hub */}
+      {/* Central hub with pulse ring */}
       <div
-        className="absolute flex items-center justify-center rounded-2xl bg-brand-50 shadow-[0_10px_32px_rgba(234,90,12,0.22)]"
-        style={{
-          left:   pct(HUB.x, W),
-          top:    pct(HUB.y, H),
-          width:  pct(HUB.size, W),
-          height: pct(HUB.size, H),
-        }}
+        className="hub-pulse absolute flex items-center justify-center rounded-2xl bg-brand-50 shadow-[0_10px_32px_rgba(234,90,12,0.22)]"
+        style={{ left: pct(HUB.x, W), top: pct(HUB.y, H), width: pct(HUB.size, W), height: pct(HUB.size, H) }}
       >
         <Zap className="size-1/2 fill-brand-600 text-brand-600" strokeWidth={1} />
       </div>
 
-      {/* Outcome cards (right) */}
+      {/* Outcome cards */}
       {outcomes.map(({ label, Icon }, i) => (
         <div
           key={label}
-          className={`${card} gap-2.5 px-3 lg:px-4`}
-          style={{
-            left:   pct(TGT.x, W),
-            top:    pct(ROWS[i] - TGT.h / 2, H),
-            width:  pct(TGT.w, W),
-            height: pct(TGT.h, H),
-          }}
+          onMouseEnter={() => setHovered(i)}
+          onMouseLeave={() => setHovered(null)}
+          className={`${cardStyle(i)} cursor-pointer gap-2.5 px-3 lg:px-4`}
+          style={{ left: pct(TGT.x, W), top: pct(ROWS[i] - TGT.h / 2, H), width: pct(TGT.w, W), height: pct(TGT.h, H) }}
         >
-          <Icon className="size-5 shrink-0 text-brand-600" strokeWidth={1.75} aria-hidden="true" />
-          <span className="text-xs font-semibold leading-tight tracking-tight sm:text-sm">{label}</span>
+          <Icon
+            className={`size-5 shrink-0 transition-colors duration-200 ${hovered === i ? 'text-brand-600' : 'text-zinc-400'}`}
+            strokeWidth={1.75}
+            aria-hidden="true"
+          />
+          <span className={`text-xs font-semibold leading-tight tracking-tight sm:text-sm transition-colors duration-200 ${hovered === i ? 'text-brand-600' : 'text-ink'}`}>
+            {label}
+          </span>
         </div>
       ))}
     </div>
