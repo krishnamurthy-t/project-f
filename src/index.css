@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --color-brand-50: #fff4ec;
+  --color-brand-100: #ffe6d4;
+  --color-brand-500: #f26a1b;
+  --color-brand-600: #ea5a0c;
+  --color-brand-700: #c2470a;
+  --color-ink: #1c1c1e;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-white font-sans text-ink antialiased;
+}
