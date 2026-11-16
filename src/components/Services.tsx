@@ -1,45 +1,38 @@
+import { ArrowRight } from 'lucide-react'
 import { services } from '../data/site'
 
 export function Services() {
   return (
-    <section id="services" className="scroll-mt-20 bg-zinc-50">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-        {/* Section header */}
-        <div className="mb-12 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="flex items-center gap-3 text-xs font-semibold tracking-[0.14em] text-brand-600 uppercase">
-              <span className="h-px w-10 bg-brand-600" aria-hidden="true" />
-              Services
-            </p>
-            <h2 className="mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">
-              What we build.
-            </h2>
-          </div>
-          <p className="max-w-xs text-sm text-zinc-500">
-            End-to-end solutions tailored to your business — from automation to full-stack apps.
+    <section id="services" className="mx-auto max-w-6xl scroll-mt-6 px-4 sm:px-6">
+      <div className="grid gap-10 border-t border-zinc-200 py-14 sm:py-16 lg:grid-cols-[1fr_2fr]">
+        <div>
+          <p className="flex items-center gap-5 text-sm font-semibold tracking-[0.12em] uppercase">
+            Services
+            <span className="h-0.5 w-12 bg-brand-600" aria-hidden="true" />
           </p>
+          <h2 className="mt-10 text-5xl leading-[1.05] font-extrabold tracking-tight sm:mt-14">
+            What
+            <br />
+            we build.
+          </h2>
         </div>
 
-        {/* Service cards */}
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {services.map(({ title, description, icon: Icon }) => (
+        <ul>
+          {services.map(({ title, description, icon: Icon }, i) => (
             <li key={title}>
-              <a
-                href="#top"
-                className="group flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-brand-200 hover:shadow-md"
-              >
-                {/* Icon badge */}
-                <span className="mb-5 inline-flex size-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white">
-                  <Icon className="size-5" strokeWidth={1.75} aria-hidden="true" />
-                </span>
-
-                <h3 className="text-base font-bold tracking-tight">{title}</h3>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-zinc-500">{description}</p>
-
-                {/* Subtle arrow */}
-                <span className="mt-5 text-xs font-semibold text-brand-600 opacity-0 transition group-hover:opacity-100">
-                  Learn more →
-                </span>
+              <a href="#top" className="group flex items-center gap-6 sm:gap-10">
+                <Icon className="size-9 shrink-0 text-ink" strokeWidth={1.5} aria-hidden="true" />
+                <div className={`flex flex-1 items-center gap-4 py-5 sm:py-6 ${i < services.length - 1 ? 'border-b border-zinc-200' : ''}`}>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h3>
+                    <p className="mt-1 text-zinc-600 sm:text-lg">{description}</p>
+                  </div>
+                  <ArrowRight
+                    className="size-6 shrink-0 transition group-hover:translate-x-1 group-hover:text-brand-600"
+                    strokeWidth={1.75}
+                    aria-hidden="true"
+                  />
+                </div>
               </a>
             </li>
           ))}

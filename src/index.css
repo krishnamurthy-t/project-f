@@ -2,29 +2,18 @@
 
 @theme {
   --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
-
-  /* Brand */
-  --color-brand-50:  #fff4ec;
+  --color-brand-50: #fff4ec;
   --color-brand-100: #ffe6d4;
   --color-brand-500: #f26a1b;
   --color-brand-600: #ea5a0c;
   --color-brand-700: #c2470a;
-
-  /* Neutrals */
-  --color-ink:   #1c1c1e;
-  --color-muted: #71717a;
+  --color-ink: #1c1c1e;
 }
 
-html { scroll-behavior: smooth; }
-
-body { @apply bg-white font-sans text-ink antialiased; }
-
-/* Flow-diagram edge animation */
-@keyframes dash {
-  to { stroke-dashoffset: 0; }
+html {
+  scroll-behavior: smooth;
 }
-.animate-dash {
-  stroke-dasharray: 6 5;
-  stroke-dashoffset: 220;
-  animation: dash 2.4s linear infinite;
+
+body {
+  @apply bg-white font-sans text-ink antialiased;
 }
